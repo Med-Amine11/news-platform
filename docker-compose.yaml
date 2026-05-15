@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000  # 2 secondes
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+
+    environment:
+
+      # connexion à ZooKeeper
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      # ID unique du broker Kafka
+      KAFKA_BROKER_ID: 1
+
+      # où Kafka écoute DANS le container
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+
+      # adresse visible depuis ton PC (Python)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      # topic interne Kafka (obligatoire en dev)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  
+  # Serveur de stockage 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000" # Port de l'API S3
+      - "9001:9001" # Port de l'interface d'administration 
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001" # Démarre MinIO en mode serveur et /data comme le répertoire de stockage 
+    # force la console web sur le port 9001
+    restart: unless-stopped
+
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: news_warehouse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - news_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - news_network
+
+volumes:
+  minio_data : 
+  postgres_data:
+  grafana_data:
+
+networks:
+  # Permet aux conteneurs de communiquer entre eux
+  news_network:
