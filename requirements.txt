@@ -1,0 +1,8 @@
+kafka-python
+minio
+psycopg2-binary
+apscheduler
+beautifulsoup4
+requests
+selenium
+langdetect
