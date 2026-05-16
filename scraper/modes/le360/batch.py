@@ -3,7 +3,7 @@ from scraper.core.le360.article import scrape_article
 from scraper.utils.storage import load_seen_urls, save_seen_urls
 from scraper.messaging.producer import send_batch_event
 
-SEEN_FILE = "scraper/state/le360/seen_urls.json"
+SEEN_FILE = "scraper/state/le360/seen_urls_batch.json"
 
 def run_le360_batch():
     """Lance un cycle de scraping batch Le360 (une seule fois)."""

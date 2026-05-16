@@ -4,7 +4,7 @@ from scraper.core.hespress.article import scrape_article
 from scraper.utils.storage import load_seen_urls, save_seen_urls, save_article
 from scraper.messaging.producer import send_stream_event
 
-SEEN_FILE = "scraper/state/hespress/seen_urls.json"
+SEEN_FILE = "scraper/state/hespress/seen_urls_stream.json"
 
 def run_hespress_stream():
     """Lance un cycle de scraping stream Hespress (une seule fois)."""

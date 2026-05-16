@@ -156,7 +156,7 @@ if __name__ == "__main__":
     # IntervalTrigger définit l'intervalle de répétition
     scheduler.add_job(
         job_stream,
-        trigger=IntervalTrigger(minutes=2),
+        trigger=IntervalTrigger(minutes=1),
         id="stream_job",
         name="Stream Hespress + Le360",
         replace_existing=True
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     # Batch toutes les heures
     scheduler.add_job(
         job_batch,
-        trigger=IntervalTrigger(minutes = 5),
+        trigger=IntervalTrigger(minutes = 2),
         id="batch_job",
         name="Batch Hespress + Le360",
         replace_existing=True

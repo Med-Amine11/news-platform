@@ -110,11 +110,14 @@ news-platform/
     │   ├── minio_client.py       ← Initialisation et connexion au client MinIO
     │   └── key.py                ← Génération des clés de stockage MinIO (chemins des fichiers)
     │
-    └── state/                    ← Persistance des URLs déjà vues (anti-doublons)
+    |__state/
         ├── hespress/
-        │   └── seen_urls.json    ← Liste des URLs Hespress déjà scrapées
+        │   ├── seen_urls_stream.json   ← utilisé uniquement par le stream
+        │   └── seen_urls_batch.json    ← utilisé uniquement par le batch
         └── le360/
-            └── seen_urls.json    ← Liste des URLs Le360 déjà scrapées
+            ├── seen_urls_stream.json
+            └── seen_urls_batch.json
+
 
 ---
 
@@ -128,7 +131,7 @@ news-platform/
 ### 1 — Cloner le projet
 
 ```bash
-git clone https://github.com/ton-repo/news-platform.git
+git clone https://github.com/Med-Amine11/news-platform
 cd news-platform
 ```
 
@@ -194,7 +197,7 @@ Sauvegarde exacte de l'article tel que scraipé, sans aucune modification.
   "source" : "Source" , 
   "author": "Auteur", 
   "date" : "Date de publication" ,
-  "tags" : [liste des tags] , 
+  "tags" : ["tag 1" , "tag 2" , ... ]
   "category" : "Catégorie"
 }
 ```
@@ -211,6 +214,7 @@ HTML supprimé, champs normalisés, langue détectée.
   "author": "Nom auteur",
   "tags": ["Politique", "Maroc"],
   "lang": "ar" , 
+  "processed_at": "..." , 
   ...
 }
 ```
@@ -246,11 +250,10 @@ Métriques calculées sur chaque article + tables analytiques agrégées.
 
 ## 📈 Dashboard Grafana
 
-Le dashboard se configure automatiquement au démarrage via le provisioning (fichiers YAML + JSON).
+Dashboard créé via l'interface web Grafana — 6 panels connectés à PostgreSQL, chacun lié à une requête SQL dédiée.
 
 **Panels disponibles :**
 - Articles par source (Bar chart)
-- Articles par catégorie (Pie chart)
 - Articles par jour (Time series)
 - Articles par langue (Pie chart)
 - Top tags (Bar chart)
